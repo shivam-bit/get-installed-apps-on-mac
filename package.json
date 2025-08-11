@@ -1,0 +1,64 @@
+{
+  "name": "get-installed-apps-on-mac",
+  "version": "0.1.0",
+  "license": "MIT",
+  "author": "shivam-bit",
+  "main": "dist/index.js",
+  "module": "dist/get-installed-apps-on-mac.esm.js",
+  "typings": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "analyze": "size-limit --why",
+    "build": "dts build",
+    "lint": "dts lint",
+    "prepare": "dts build",
+    "size": "size-limit",
+    "start": "dts watch",
+    "test": "dts test"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "dts lint"
+    }
+  },
+  "prettier": {
+    "printWidth": 80,
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "es5"
+  },
+  "jest": {
+    "testEnvironment": "node"
+  },
+  "engines": {
+    "node": ">=12"
+  },
+  "size-limit": [
+    {
+      "path": "dist/get-installed-apps-on-mac.cjs.production.min.js",
+      "limit": "10 KB"
+    },
+    {
+      "path": "dist/get-installed-apps-on-mac.esm.js",
+      "limit": "10 KB"
+    }
+  ],
+  "devDependencies": {
+    "@size-limit/preset-small-lib": "^11.2.0",
+    "@tsconfig/recommended": "^1.0.10",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.2.1",
+    "dts-cli": "^2.0.5",
+    "husky": "^9.1.7",
+    "size-limit": "^11.2.0",
+    "tslib": "^2.8.1",
+    "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "iconutil": "^1.0.2",
+    "simple-plist": "^1.3.1"
+  }
+}
