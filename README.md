@@ -1,10 +1,11 @@
 # get-installed-apps-on-mac
 
-A TypeScript library for scanning and retrieving information about installed macOS applications, including app icons with base64 encoding support.
+A TypeScript library for scanning and retrieving information about installed macOS applications and PWAs (Progressive Web Apps), including app icons with base64 encoding support.
 
 ## Features
 
 - 🔍 **Fast Application Discovery** - Uses macOS Spotlight (`mdfind`) for efficient app scanning
+- 🌐 **PWA Support** - Automatically detects and includes installed Progressive Web Apps
 - 📱 **App Icon Processing** - Extracts and converts app icons to base64 PNG format
 - 🎯 **Flexible Search Options** - Search by bundle ID, name patterns, or custom paths
 - 🛡️ **Type Safety** - Full TypeScript support with comprehensive type definitions
