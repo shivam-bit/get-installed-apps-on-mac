@@ -67,4 +67,36 @@ describe('MacOSAppScanner', () => {
     expect(Array.isArray(systemApps)).toBe(true);
     // We expect at least some system apps to match
   }, 15000);
+
+  it('should prefer applications from /Applications when duplicate names exist', async () => {
+    const scanner = new MacOSAppScanner({
+      includeBase64Icon: false,
+    });
+
+    const allApps = await scanner.scanApplications();
+
+    // Group apps by name to find duplicates
+    const appsByName = new Map<string, AppInfo[]>();
+    allApps.forEach((app) => {
+      const existing = appsByName.get(app.appName) || [];
+      existing.push(app);
+      appsByName.set(app.appName, existing);
+    });
+
+    // Find apps with duplicate names
+    const duplicateNames = Array.from(appsByName.entries()).filter(
+      ([_, apps]) => apps.length > 1
+    );
+
+    // Test should fail if duplicate app names exist
+    if (duplicateNames.length > 0) {
+      const duplicateDetails = duplicateNames.map(([name, apps]) => 
+        `"${name}": [${apps.map(app => app.appPath).join(', ')}]`
+      ).join(', ');
+      
+      throw new Error(`Scanner returned duplicate app names: ${duplicateDetails}. Expected scanner to deduplicate and prefer /Applications path.`);
+    }
+
+    expect(Array.isArray(allApps)).toBe(true);
+  }, 30000);
 });
