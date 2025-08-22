@@ -8,8 +8,8 @@ import {
 
 describe('MacOSAppScanner', () => {
   it('should scan applications and return an array', async () => {
-    const apps = await scanMacOSApplications({ includeBase64Icon: true });
-    // console.log('🚀 ~ apps:', apps);
+    const apps = await scanMacOSApplications({ includeBase64Icon: false });
+    console.log('🚀 ~ apps:', apps.length, apps);
 
     expect(Array.isArray(apps)).toBe(true);
     expect(apps.length).toBeGreaterThan(0);
@@ -28,7 +28,6 @@ describe('MacOSAppScanner', () => {
     const safari = await getMacOSApplication('com.apple.Safari', {
       includeBase64Icon: true,
     });
-    console.log('🚀 ~ safari:', safari);
 
     if (safari) {
       expect(safari.bundleId).toBe('com.apple.Safari');
@@ -90,11 +89,16 @@ describe('MacOSAppScanner', () => {
 
     // Test should fail if duplicate app names exist
     if (duplicateNames.length > 0) {
-      const duplicateDetails = duplicateNames.map(([name, apps]) => 
-        `"${name}": [${apps.map(app => app.appPath).join(', ')}]`
-      ).join(', ');
-      
-      throw new Error(`Scanner returned duplicate app names: ${duplicateDetails}. Expected scanner to deduplicate and prefer /Applications path.`);
+      const duplicateDetails = duplicateNames
+        .map(
+          ([name, apps]) =>
+            `"${name}": [${apps.map((app) => app.appPath).join(', ')}]`
+        )
+        .join(', ');
+
+      throw new Error(
+        `Scanner returned duplicate app names: ${duplicateDetails}. Expected scanner to deduplicate and prefer /Applications path.`
+      );
     }
 
     expect(Array.isArray(allApps)).toBe(true);
