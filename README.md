@@ -46,8 +46,8 @@ Scans for all installed macOS applications.
 
 ```typescript
 const apps = await scanMacOSApplications({
-  includeBase64Icon: true,  // Include base64 encoded icons (default: true)
-  iconSize: 512,           // Icon size in pixels (default: 512)
+  includeBase64Icon: false, // Include base64 encoded icons (default: false)
+  iconSize: 256,           // Icon size in pixels (default: 256)
   searchPaths: [           // Custom search paths (default: ['/Applications', '$HOME/Applications'])
     '/Applications',
     '/System/Applications'
@@ -107,8 +107,8 @@ interface AppInfo {
 
 ```typescript
 interface ScanOptions {
-  readonly includeBase64Icon?: boolean; // Include base64 icon data (default: true)
-  readonly iconSize?: number;           // Icon size in pixels (default: 512)
+  readonly includeBase64Icon?: boolean; // Include base64 icon data (default: false)
+  readonly iconSize?: number;           // Icon size in pixels (default: 256)
   readonly searchPaths?: string[];      // Paths to search (default: ['/Applications', '$HOME/Applications'])
   readonly timeout?: number;            // Command timeout in ms (default: 30000)
 }

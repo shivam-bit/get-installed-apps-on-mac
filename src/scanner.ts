@@ -16,8 +16,8 @@ export class MacOSAppScanner {
     '/System/Applications',
   ];
   private static readonly DEFAULT_OPTIONS: Required<ScanOptions> = {
-    includeBase64Icon: true,
-    iconSize: 512,
+    includeBase64Icon: false,
+    iconSize: 256,
     searchPaths: MacOSAppScanner.DEFAULT_SEARCH_PATHS,
     timeout: 30000,
   };

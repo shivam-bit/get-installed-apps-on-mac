@@ -25,7 +25,7 @@ export class IconProcessor {
    */
   public static async convertToBase64(
     iconPath: string,
-    size: number = 512
+    size: number = 256
   ): Promise<string> {
     try {
       const ext = path.extname(iconPath).toLowerCase();
