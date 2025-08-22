@@ -13,6 +13,7 @@ export class MacOSAppScanner {
   private static readonly DEFAULT_SEARCH_PATHS = [
     '/Applications',
     '$HOME/Applications',
+    '/System/Applications',
   ];
   private static readonly DEFAULT_OPTIONS: Required<ScanOptions> = {
     includeBase64Icon: true,
@@ -87,12 +88,14 @@ export class MacOSAppScanner {
       .map((p) => `-onlyin "${p}"`)
       .join(' ');
 
-    const cmd = `mdfind ${searchPathsStr} 'kMDItemKind == "Application"' | while read app; do
-      info_plist="$app/Contents/Info.plist"
-      if [ -f "$info_plist" ]; then
-        printf "%s\\0%s\\0" "$app" "$info_plist"
-      fi
-    done`;
+    const cmd = `mdfind ${searchPathsStr} 'kMDItemKind == "Application"' \
+      | grep -v '^/System/Applications/Utilities/' \
+      | while IFS= read -r app; do
+          info_plist="$app/Contents/Info.plist"
+          if [ -f "$info_plist" ]; then
+            printf "%s\\0%s\\0" "$app" "$info_plist"
+          fi
+        done`;
 
     const { stdout } = await execAsync(cmd, { timeout: this.options.timeout });
     const parts = stdout.split('\0').filter((part) => part.trim() !== '');
