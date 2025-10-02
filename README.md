@@ -25,7 +25,7 @@ pnpm add get-installed-apps-on-mac
 ## Quick Start
 
 ```typescript
-import { scanMacOSApplications, getMacOSApplication } from 'get-installed-apps-on-mac';
+import { scanMacOSApplications, getMacOSApplication, getAppInfoFromPath } from 'get-installed-apps-on-mac';
 
 // Scan all applications
 const apps = await scanMacOSApplications();
@@ -36,6 +36,10 @@ const safari = await getMacOSApplication('com.apple.Safari');
 if (safari) {
   console.log(`Safari: ${safari.appName} at ${safari.appPath}`);
 }
+
+// Extract info from a specific .app path
+const appInfo = await getAppInfoFromPath('/Applications/TextEdit.app');
+console.log(`${appInfo.appName} (${appInfo.bundleId})`);
 ```
 
 ## API Reference
@@ -65,6 +69,23 @@ const app = await getMacOSApplication('com.apple.TextEdit', {
   includeBase64Icon: false
 });
 ```
+
+### `getAppInfoFromPath(appPath, options?)`
+
+Extracts application information from a specific .app bundle path.
+
+```typescript
+const app = await getAppInfoFromPath('/Applications/TextEdit.app', {
+  includeBase64Icon: true,
+  iconSize: 256
+});
+```
+
+**Parameters:**
+- `appPath` (string): Full path to the .app bundle
+- `options` (object, optional):
+  - `includeBase64Icon` (boolean): Include base64 encoded icon (default: false)
+  - `iconSize` (number): Icon size in pixels (default: 256)
 
 ### `MacOSAppScanner`
 
@@ -162,6 +183,24 @@ const adobeApps = await scanner.getApplicationsByName(/adobe/i);
 
 // Find development tools
 const devTools = await scanner.getApplicationsByName(/xcode|terminal|git/i);
+```
+
+### Process Specific App Path
+
+```typescript
+import { getAppInfoFromPath } from 'get-installed-apps-on-mac';
+
+// Extract info from a known app path
+const appInfo = await getAppInfoFromPath('/Users/username/Applications/MyApp.app', {
+  includeBase64Icon: true,
+  iconSize: 128
+});
+
+console.log(`App: ${appInfo.appName}`);
+console.log(`Bundle ID: ${appInfo.bundleId}`);
+if (appInfo.appIconBase64) {
+  console.log('Base64 icon available');
+}
 ```
 
 ## System Requirements

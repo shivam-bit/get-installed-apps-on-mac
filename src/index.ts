@@ -34,3 +34,14 @@ export async function getMacOSApplication(
   return scanner.getApplicationByBundleId(bundleId);
 }
 
+/**
+ * Extract app information from a specific .app bundle path
+ */
+export async function getAppInfoFromPath(
+  appPath: string,
+  options?: Pick<ScanOptions, 'includeBase64Icon' | 'iconSize'>
+): Promise<AppInfo> {
+  const scanner = new MacOSAppScanner(options);
+  return scanner.processAppFromPath(appPath);
+}
+

@@ -1,15 +1,16 @@
 import {
   scanMacOSApplications,
   getMacOSApplication,
+  getAppInfoFromPath,
   MacOSAppScanner,
   AppInfo,
   ScanOptions,
+  AppScanError,
 } from '../src/index';
 
 describe('MacOSAppScanner', () => {
   it('should scan applications and return an array', async () => {
     const apps = await scanMacOSApplications({ includeBase64Icon: false });
-    console.log('🚀 ~ apps:', apps.length, apps);
 
     expect(Array.isArray(apps)).toBe(true);
     expect(apps.length).toBeGreaterThan(0);
@@ -103,4 +104,56 @@ describe('MacOSAppScanner', () => {
 
     expect(Array.isArray(allApps)).toBe(true);
   }, 30000);
+
+  describe('getAppInfoFromPath', () => {
+    it('should extract app info from valid .app path', async () => {
+      // First get an app from the scanner to test with
+      const apps = await scanMacOSApplications({ includeBase64Icon: false });
+      expect(apps.length).toBeGreaterThan(0);
+
+      const testApp = apps[0];
+      const appInfo = await getAppInfoFromPath(testApp.appPath);
+
+      expect(appInfo.appName).toBe(testApp.appName);
+      expect(appInfo.appPath).toBe(testApp.appPath);
+      expect(appInfo.bundleId).toBe(testApp.bundleId);
+      expect(appInfo.appIconBase64).toBeNull(); // Default is false
+    }, 15000);
+
+    it('should include base64 icon when requested', async () => {
+      const apps = await scanMacOSApplications({ includeBase64Icon: false });
+      expect(apps.length).toBeGreaterThan(0);
+
+      const testApp = apps[0];
+      const appInfo = await getAppInfoFromPath(testApp.appPath, {
+        includeBase64Icon: true,
+        iconSize: 128,
+      });
+
+      expect(appInfo.appName).toBe(testApp.appName);
+      if (appInfo.appIconPath) {
+        expect(appInfo.appIconBase64).toBeDefined();
+        expect(appInfo.appIconBase64).toContain('data:image/png;base64,');
+      }
+    }, 15000);
+
+    it('should throw error for invalid path', async () => {
+      await expect(
+        getAppInfoFromPath('/invalid/path/NotAnApp.app')
+      ).rejects.toThrow(AppScanError);
+    });
+
+    it('should throw error for non-.app path', async () => {
+      await expect(
+        getAppInfoFromPath('/Applications/TextEdit')
+      ).rejects.toThrow('Path must end with .app');
+    });
+
+    it('should throw error for app without Info.plist', async () => {
+      // This would be a malformed .app bundle
+      await expect(getAppInfoFromPath('/tmp/fake.app')).rejects.toThrow(
+        AppScanError
+      );
+    });
+  });
 });

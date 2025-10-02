@@ -1,5 +1,7 @@
 import { exec } from 'child_process';
 import { promisify } from 'util';
+import * as path from 'path';
+import * as fs from 'fs/promises';
 import { AppInfo, ScanOptions, AppScanError } from './types';
 import { IconProcessor } from './icon-processor';
 import { PlistParser } from './plist-parser';
@@ -79,6 +81,29 @@ export class MacOSAppScanner {
         : namePattern;
 
     return apps.filter((app) => pattern.test(app.appName));
+  }
+
+  /**
+   * Process a single .app bundle from a specific path
+   */
+  public async processAppFromPath(appPath: string): Promise<AppInfo> {
+    if (!appPath.endsWith('.app')) {
+      throw new AppScanError(`Path must end with .app: ${appPath}`);
+    }
+
+    try {
+      await fs.access(appPath);
+    } catch (error) {
+      throw new AppScanError(`App bundle not found: ${appPath}`);
+    }
+    const plistPath = path.join(appPath, 'Contents', 'Info.plist');
+
+    try {
+      await fs.access(plistPath);
+    } catch (error) {
+      throw new AppScanError(`Info.plist not found: ${plistPath}`);
+    }
+    return this.processApplication(appPath, plistPath);
   }
 
   private async findApplicationPaths(): Promise<
